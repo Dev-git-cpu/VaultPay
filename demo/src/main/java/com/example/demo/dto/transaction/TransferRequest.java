@@ -1,16 +1,10 @@
 package com.example.demo.dto.transaction;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class TransferRequest {
     private Long senderUserId;
     private Long receiverUserId;

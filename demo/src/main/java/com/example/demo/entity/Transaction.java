@@ -1,28 +1,42 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.example.demo.enums.TransactionStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Transaction {
-private Long id;
-private Long senderUserId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long senderUserId;
+
     @Column(nullable = false)
     private Long receiverUserId;
 
     @Column(nullable = false)
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;   // SUCCESS / FAILED
+    private TransactionStatus status;
 
+    private String message;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
-
-
 
 }
