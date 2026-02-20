@@ -1,39 +1,110 @@
-import Navbar from "../../components/Navbar";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Transfer = () => {
-  return (
-    <div className="min-h-screen bg-black">
-      <Navbar />
+  const [to, setTo] = useState("");
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
 
-      <div className="flex justify-center mt-12">
-        <div className="bg-gray-950 rounded-2xl shadow-lg p-8 w-full max-w-md border-2 hover:border-green-500">
-          <h2 className="text-xl font-bold mb-2 text-green-500">Transfer Money</h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Current balance: ₹5,000
+  const navigate = useNavigate();
+
+  const transferHandler = async () => {
+    const userId = localStorage.getItem("userId");
+
+    if (!to || !amount) {
+      toast.warning("Receiver and amount required");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/transactions/transfer?senderUserId=${userId}`,
+        {
+          identifier: to,         
+          amount: Number(amount),
+          message: message,
+        }
+      );
+
+      toast.success("Transfer Successful");
+
+      navigate("/transferSuccess", { state: response.data,replace:true });
+
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Transfer Failed"
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-6">
+      <div className="relative w-full max-w-xl">
+
+        <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-3xl"></div>
+
+        <div className="relative bg-[#111] rounded-3xl p-10 border border-emerald-500/10 shadow-2xl">
+
+          <h2 className="text-3xl font-bold text-white">
+            Transfer Money
+          </h2>
+
+          <p className="text-gray-400 mt-2">
+            Send money to anyone, instantly
           </p>
 
-          <input
-            className="w-full border p-2 rounded mb-3 text-white placeholder-gray-600 border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="Receiver username or user ID"
-          />
+          <div className="mt-8 space-y-6">
 
-          <input
-            className="w-full border p-2 rounded mb-3 text-white placeholder-gray-600 border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="Amount (INR)"
-          />
+            {/* Receiver */}
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Receiver Username
+              </label>
+              <input
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                type="text"
+                placeholder="username"
+                className="w-full bg-[#0f0f0f] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+              />
+            </div>
 
-          <textarea
-            className="w-full border p-2 rounded mb-4 text-white  placeholder-gray-600 border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="Message (optional)"
-          />
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Amount (₹)
+              </label>
+              <input
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                type="number"
+                placeholder="1000"
+                className="w-full bg-[#0f0f0f] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+              />
+            </div>
 
-          <div className="flex gap-4">
-            <button className="flex-1 bg-green-600 text-white py-2 rounded-lg cursor-pointer">
-              Transfer
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Message (Optional)
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows="4"
+                placeholder="Add a note..."
+                className="w-full bg-[#0f0f0f] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+              ></textarea>
+            </div>
+
+            <button
+              onClick={transferHandler}
+              className="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-4 rounded-2xl"
+            >
+              Send Money
             </button>
-            <button className="flex-1 border py-2 rounded-lg bg-black text-white cursor-pointer">
-              Cancel
-            </button>
+
           </div>
         </div>
       </div>

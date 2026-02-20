@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -14,19 +16,18 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
 
-    public Wallet getWalletByUserId(Long userId) {
-        return walletRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> new WalletNotFoundException("Wallet not found for userId : " + userId));
-    }
-    public void deductBalance(Wallet wallet, BigDecimal amount) {
-        BigDecimal newBalance = wallet.getBalance().subtract(amount);
-        wallet.setBalance(newBalance);
-        walletRepository.save(wallet);
-    }
-    public void addBalance(Wallet wallet, BigDecimal amount) {
-        BigDecimal newBalance = wallet.getBalance().add(amount);
-        wallet.setBalance(newBalance);
-        walletRepository.save(wallet);
+    public Map<String, Object> getBalanceForUser(Long userId) {
+        Wallet wallet = walletRepository.findByUserUserId(userId)
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found for userId: " + userId));
 
-}
+        String currency = wallet.getCurrency() != null ? wallet.getCurrency() : "INR";
+        BigDecimal balance = wallet.getBalance() != null ? wallet.getBalance() : BigDecimal.ZERO;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("userId", wallet.getUser().getUserId());
+        response.put("balance", balance);
+        response.put("currency", currency);
+
+        return response;
+    }
 }

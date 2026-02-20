@@ -1,4 +1,4 @@
-package com.example.demo.dto.User;
+package com.example.demo.dto.Auth;
 
 import lombok.*;
 
@@ -8,5 +8,6 @@ public class LoginResponse {
     private Long userId;
     private String username;
     private String message;
+
 
 }

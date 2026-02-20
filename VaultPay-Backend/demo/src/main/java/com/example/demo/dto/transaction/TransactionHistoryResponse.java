@@ -1,19 +1,20 @@
 package com.example.demo.dto.transaction;
 
 import com.example.demo.enums.TransactionStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class TransferResponse {
-    private Long transactionId;
-    private String receiverUsername;
+public class TransactionHistoryResponse {
+    private String otherPersonUsername;
+    private String type;
     private BigDecimal amount;
-    private BigDecimal remainingBalance;
+    private String message;
     private TransactionStatus status;
-    private LocalDateTime timestamp;
+    private LocalDateTime date;
 
 }

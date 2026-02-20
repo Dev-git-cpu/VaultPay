@@ -1,29 +1,29 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.User.LoginRequest;
-import com.example.demo.dto.User.LoginResponse;
-import com.example.demo.dto.User.UserRegisterRequest;
-import com.example.demo.service.UserService;
+import com.example.demo.dto.Auth.LoginRequest;
+import com.example.demo.dto.Auth.LoginResponse;
+import com.example.demo.dto.Auth.RegisterRequest;
+import com.example.demo.dto.Auth.RegisterResponse;
+import com.example.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173",
-        allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponse> register(@RequestBody UserRegisterRequest userRegisterRequest){
-        return ResponseEntity.ok(userService.register(userRegisterRequest));
+    public RegisterResponse register(@RequestBody RegisterRequest request) {
+        return authService.register(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
-        return ResponseEntity.ok(userService.login(loginRequest));
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
+
 }

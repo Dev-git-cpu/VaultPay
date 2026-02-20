@@ -19,13 +19,13 @@ import java.time.LocalDateTime;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long transactionId;
 
     @Column(nullable = false)
-    private Long senderUserId;
+    private Long sender;
 
     @Column(nullable = false)
-    private Long receiverUserId;
+    private Long receiver;
 
     @Column(nullable = false)
     private BigDecimal amount;

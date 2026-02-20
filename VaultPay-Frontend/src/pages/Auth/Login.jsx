@@ -1,103 +1,123 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
 
-    const [identifier,setIdentifier] = useState('')
-    const [password,setPassword] = useState('')
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
 
-    const navigate = useNavigate();
-    const LoginHandler = async (e) =>{
-        e.preventDefault()
-        if(!identifier || !password){
-            alert("All fields are required")
-        }
+  const navigate = useNavigate();
 
-        try {
-            const response = await axios.post("http://localhost:8080/api/auth/login",{identifier,password})
-            console.log(response);
+ const LoginHandler = async (e) => {
+  e.preventDefault();
 
-            localStorage.setItem("name",response.data.name)
-            localStorage.setItem("username",response.data.username)
+  if (!identifier || !password) {
+    toast.warning("All fields are required");
+    return;
+  }
 
-            navigate('/dashboard')
-            
-            
-        } catch (error) {
-            console.log(error);
-            
-        }
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/api/auth/login",
+      { identifier, password }
+    );
 
+    const data = response.data;
+
+    if (!data.userId) {
+      toast.error(data.message || "Login failed");
+      return;
     }
-    
+
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("username", data.username);
+
+    toast.success("Login Successful");
+
+    navigate("/dashboard",{replace:true});
+  } catch (error) {
+    const message =
+      error.response?.data?.message || "Login failed";
+    toast.error(message);
+  }
+};
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="w-full max-w-md bg-gray-950 rounded-2xl shadow-lg p-8 border hover:border-green-500">
-        
-        {/* Title */}
-      <div className="flex items-center justify-center">
-  <div className="flex items-center gap-2">
-    <img
-      src="v.png"
-      alt="VaultPay"
-      className="h-10 w-10 object-contain"
-    />
-    <span className="text-2xl font-semibold text-green-500 leading-none flex items-center">
-      VaultPay
-    </span>
-  </div>
-</div>
+    <div className="min-h-screen bg-black flex items-center justify-center px-6">
 
+      <div className="relative w-full max-w-md">
 
-        <p className="text-white text-sm text-center mt-1">
-          Secure money transfers at your fingertips
-        </p>
+        <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-3xl"></div>
 
-        {/* Form */}
-        <form className="mt-6 space-y-4">
-          {/* Username */}
-          <div>
-            <label  className="block text-sm font-medium text-white">
-              Username or Email
-            </label>
-            <input value={identifier} onChange={(e)=>{setIdentifier(e.target.value)}}
-              type="text"
-              placeholder="username or email"
-              className="mt-1 w-full px-4 py-2 text-white placeholder-gray-600 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+        <div className="relative bg-[#0b0b0b] rounded-3xl p-10 border border-emerald-500/10 shadow-2xl">
+
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-emerald-500">VaultPay</h1>
+
+            <h2 className="text-2xl font-semibold text-white mt-4">
+              Welcome Back
+            </h2>
+
+            <p className="text-gray-400 mt-2">
+              Access your secure wallet
+            </p>
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Password
-            </label>
-            <input value={password} onChange={(e)=>{setPassword(e.target.value)}}
-              type="password"
-              placeholder="••••••••"
-              className="mt-1 w-full px-4 py-2 text-white placeholder-gray-600  border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
+          <form onSubmit={LoginHandler} className="space-y-6">
 
-          {/* Button */}
-          <button onClick={LoginHandler}
-            type="submit"
-            className="w-full py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition"
-          >
-            Log In
-          </button>
-        </form>
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Username or Email
+              </label>
+              <input
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                type="text"
+                placeholder="john@example.com"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+              />
+            </div>
 
-        {/* Signup */}
-        <p className="text-sm text-center text-gray-500 mt-4">
-          No account?{" "}
-          <span onClick={()=>navigate("/signup")} className="text-green-600 font-medium cursor-pointer hover:underline">
-            Sign up
-          </span>
-        </p>
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                placeholder="••••••••"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+              />
+            </div>
 
-        
+            <div className="text-right">
+              <p className="text-emerald-500 text-sm cursor-pointer hover:underline">
+                Forgot password?
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition duration-300 shadow-lg shadow-emerald-500/30"
+            >
+              Log In
+            </button>
+
+            <p className="text-center text-gray-400 text-sm mt-6">
+              Don’t have an account?{" "}
+              <span
+                onClick={() => navigate("/signup")}
+                className="text-emerald-500 cursor-pointer hover:underline"
+              >
+                Register
+              </span>
+            </p>
+
+          </form>
+        </div>
       </div>
     </div>
   );

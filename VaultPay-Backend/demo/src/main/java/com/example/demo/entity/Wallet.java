@@ -2,8 +2,10 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -16,7 +18,7 @@ public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long walletId;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -26,6 +28,6 @@ public class Wallet {
     private BigDecimal balance;
 
     @Column(nullable = false)
-    private String currency = "INR";
+    private String currency;
 
 }

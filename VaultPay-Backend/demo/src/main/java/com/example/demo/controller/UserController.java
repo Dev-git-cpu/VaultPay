@@ -3,37 +3,26 @@ package com.example.demo.controller;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserProfile(@PathVariable Long userId){
-
-        return ResponseEntity.ok(userService.getUserById(userId));
+    @GetMapping("/profile")
+    public User getProfile(@RequestParam Long userId) {
+        return userService.getUserById(userId);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<User> searchByUsername(@RequestParam String username) {
-        return ResponseEntity.ok(userService.getUserByUsername(username));
+    public List<User> searchUser(@RequestParam String username) {
+        return userService.searchUsername(username);
     }
-    @GetMapping("/{userId}/balance")
-    public ResponseEntity<Map<String, Object>> getBalance(@PathVariable Long userId) {
-        BigDecimal balance = userService.getWalletBalance(userId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("userId", userId);
-        response.put("balance", balance);
-        response.put("currency", "INR");
-        return ResponseEntity.ok(response);
-    }
+
 }
