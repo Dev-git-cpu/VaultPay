@@ -16,9 +16,9 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
 
-    public Map<String, Object> getBalanceForUser(Long userId) {
-        Wallet wallet = walletRepository.findByUserUserId(userId)
-                .orElseThrow(() -> new WalletNotFoundException("Wallet not found for userId: " + userId));
+    public Map<String, Object> getBalanceForUser(String username) {
+        Wallet wallet = walletRepository.findByUserUsername(username)
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found for username: " + username));
 
         String currency = wallet.getCurrency() != null ? wallet.getCurrency() : "INR";
         BigDecimal balance = wallet.getBalance() != null ? wallet.getBalance() : BigDecimal.ZERO;

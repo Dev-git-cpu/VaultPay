@@ -11,29 +11,38 @@ const Transfer = () => {
   const navigate = useNavigate();
 
   const transferHandler = async () => {
-    const userId = localStorage.getItem("userId");
-
-    if (!to || !amount) {
-      toast.warning("Receiver and amount required");
-      return;
-    }
+const token = localStorage.getItem("token");
+    if (!token) {
+    toast.error("Please login again");
+    navigate("/login");
+    return;
+  }
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/transactions/transfer?senderUserId=${userId}`,
+        `http://localhost:8080/api/transactions/transfer`,
         {
-          identifier: to,         
+          identifier: to.trim(),
           amount: Number(amount),
-          message: message,
+          message: message?.trim(),
+        },
+        {
+          headers:{
+            Authorization: `Bearer ${token}`
+          },
         }
       );
 
-      toast.success("Transfer Successful");
+      toast.success("Transfer Successful 💸");
 
-      navigate("/transferSuccess", { state: response.data,replace:true });
+      navigate("/transferSuccess", {
+        state: response.data
+      });
 
     } catch (error) {
       console.log(error);
+
+      
       toast.error(
         error.response?.data?.message || "Transfer Failed"
       );
@@ -53,7 +62,7 @@ const Transfer = () => {
           </h2>
 
           <p className="text-gray-400 mt-2">
-            Send money to anyone, instantly
+            Send money to anyone instantly
           </p>
 
           <div className="mt-8 space-y-6">
@@ -72,6 +81,7 @@ const Transfer = () => {
               />
             </div>
 
+            {/* Amount */}
             <div>
               <label className="block text-sm text-gray-300 mb-2">
                 Amount (₹)
@@ -85,6 +95,7 @@ const Transfer = () => {
               />
             </div>
 
+            {/* Message */}
             <div>
               <label className="block text-sm text-gray-300 mb-2">
                 Message (Optional)
@@ -98,6 +109,7 @@ const Transfer = () => {
               ></textarea>
             </div>
 
+            {/* Button */}
             <button
               onClick={transferHandler}
               className="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-4 rounded-2xl"

@@ -4,30 +4,49 @@ import axios from "axios";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-
   const [user, setUser] = useState(null);
-
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const userId = localStorage.getItem("userId");
+
+      const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/users/profile?userId=${userId}`,
-          
+          `http://localhost:8080/api/users/profile`,
+          {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
         setUser(res.data);
+
       } catch (err) {
         console.log(err);
+
+        // 🔐 Token expired / invalid / forbidden
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          localStorage.clear();
+          navigate("/login");
+        }
+
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
-  if (!user) return <div className="text-white p-10">Loading...</div>;
+  if (loading) return <div className="text-white p-10">Loading...</div>;
+  if (!user) return <div className="text-red-400 p-10">Failed to load profile</div>;
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white">
@@ -78,13 +97,15 @@ const ProfilePage = () => {
             <div className="flex justify-between border-b border-emerald-500/10 pb-3">
               <span className="text-gray-400">Joined</span>
               <span>
-                {new Date(user.createdAt).toLocaleDateString()}
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString()
+                  : "—"}
               </span>
             </div>
 
           </div>
 
-          <button className="mt-10 w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition shadow-lg shadow-emerald-500/30">
+          <button className="mt-10 w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl">
             Edit Profile
           </button>
 

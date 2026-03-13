@@ -11,40 +11,65 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-  const fetchData = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.error("No userId found in localStorage");
+    const fetchData = async () => {
+
+      const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
       return;
     }
 
-    const storedUsername = localStorage.getItem("username");
-    setUsername(storedUsername || "");
+      const userId = localStorage.getItem("userId");
+      
+      const storedUsername = localStorage.getItem("username");
+      setUsername(storedUsername || "");
 
-    try {
-      const balanceRes = await axios.get(
-        `http://localhost:8080/api/wallet/balance?userId=${userId}`
-      );
-      setBalance(balanceRes.data.balance);
+      try {
 
-      const txRes = await axios.get(
-        `http://localhost:8080/api/transactions/latest?userId=${userId}`
-      );
-      setTransactions(txRes.data.slice(0, 3));
+        // 💰 Wallet Balance
+        const balanceRes = await axios.get(
+          `http://localhost:8080/api/wallet/balance`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`
+            },
+          }
+        );
+        setBalance(balanceRes.data.balance);
 
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-      setBalance(0);       
-      setTransactions([]);
-    }
-  };
+        // 📜 Latest Transactions
+        const txRes = await axios.get(
+          `http://localhost:8080/api/transactions/latest`,
+          {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        );
+        console.log(localStorage.getItem("token"))
+        setTransactions(txRes.data.slice(0, 3));
 
-  fetchData();
-}, []);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+
+        // ⭐ If token expired → logout
+        if (error.response?.status === 401) {
+          localStorage.clear();
+          navigate("/login");
+        }
+
+        setBalance(0);
+        setTransactions([]);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
 
   const logoutHandler = () => {
     localStorage.clear();
-    navigate("/login",{replace:true});
+    navigate("/login");
   };
 
   return (
@@ -81,6 +106,7 @@ const Dashboard = () => {
           </p>
         </div>
 
+        {/* Wallet Card */}
         <div className="relative mt-10 rounded-2xl bg-[#111] p-10 flex flex-col md:flex-row md:items-center md:justify-between overflow-hidden">
           <div className="absolute inset-0 bg-emerald-500/10 blur-3xl -z-10"></div>
 
@@ -108,13 +134,14 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Recent Transactions */}
         <div className="mt-14 rounded-2xl border border-emerald-500/10 bg-[#111] p-8">
           <h3 className="text-xl font-semibold mb-6">Recent Transactions</h3>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-separate border-spacing-y-5">
               <thead>
-                <tr className="text-gray-400 border-b border-emerald-500/10 ">
+                <tr className="text-gray-400">
                   <th>User</th>
                   <th>Type</th>
                   <th>Amount</th>
@@ -125,32 +152,33 @@ const Dashboard = () => {
               </thead>
 
               <tbody>
-  {transactions.map((tx, index) => {
-    const isDebit = tx.type?.toLowerCase() === "sent";
+                {transactions.map((tx, index) => {
+                  const isDebit = tx.type?.toLowerCase() === "sent";
 
-    return (
-      <tr key={index} className="border-b border-emerald-500/10">
-        <td>{tx.otherPersonUsername}</td>
+                  return (
+                    <tr key={index}>
+                      <td>{tx.otherPersonUsername}</td>
 
-        <td className={isDebit ? "text-red-400" : "text-emerald-400"}>
-          {tx.type}
-        </td>
+                      <td className={isDebit ? "text-red-400" : "text-emerald-400"}>
+                        {tx.type}
+                      </td>
 
-        <td className={isDebit ? "text-red-500" : "text-emerald-500"}>
-          ₹{tx.amount}
-        </td>
+                      <td className={isDebit ? "text-red-500" : "text-emerald-500"}>
+                        ₹{tx.amount}
+                      </td>
 
-        <td className="text-gray-400">{tx.message}</td>
+                      <td className="text-gray-400">{tx.message}</td>
 
-        <td className="text-emerald-400">{tx.status}</td>
+                      <td className="text-emerald-400">{tx.status}</td>
 
-        <td className="text-gray-500">
-          {new Date(tx.date).toLocaleDateString()}
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
+                      <td className="text-gray-500">
+                        {new Date(tx.date).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+
             </table>
           </div>
         </div>
@@ -160,4 +188,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

@@ -31,26 +31,33 @@ public class TransactionService {
    private final WalletRepository walletRepository;
 
    @Transactional
-   public TransferResponse transfer(Long senderUserId,TransferRequest request){
-       User sender = userRepository.findById(senderUserId)
+   public TransferResponse transfer(String username,TransferRequest request){
+
+       User sender = userRepository.findByUsername(username)
                .orElseThrow(()-> new UserNotFoundException("sender not found"));
+       Wallet senderWallet = walletRepository.findByUser(sender)
+               .orElseThrow(()-> new WalletNotFoundException("Sender wallet not found"));
+
 
        User receiver = userRepository.findByUsername(request.getIdentifier())
                .orElseThrow(()-> new UserNotFoundException("Receiver not found"));
+
+       Wallet receiverWallet = walletRepository.findByUser(receiver)
+               .orElseThrow(()-> new WalletNotFoundException("Receiver wallet not found"));
 
        if(sender.getUserId().equals(receiver.getUserId())){
            throw new InvalidParameterException("Cannot send to yourself");
        }
 
-       Wallet senderWallet = walletRepository.findByUser(sender)
-               .orElseThrow(()-> new WalletNotFoundException("Sender wallet not found"));
-
-       Wallet receiverWallet = walletRepository.findByUser(receiver)
-               .orElseThrow(()-> new WalletNotFoundException("Receiver wallet not found"));
+       if (request.getAmount() == null || request.getAmount().signum() <= 0) {
+           throw new InvalidParameterException("Invalid amount");
+       }
 
        if(senderWallet.getBalance().compareTo(request.getAmount()) < 0){
            throw new InsufficientBalanceException("Insufficient Balance");
        }
+
+
 
        senderWallet.setBalance(
                senderWallet.getBalance().subtract(request.getAmount())
@@ -83,7 +90,12 @@ public class TransactionService {
        );
    }
 
-    public List<TransactionHistoryResponse> getTransactionHistory(Long userId, String type) {
+    public List<TransactionHistoryResponse> getTransactionHistory(String username, String type) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Long userId = user.getUserId();
 
         type = (type == null) ? "ALL" : type.toUpperCase();
 
@@ -126,6 +138,5 @@ public class TransactionService {
                 })
                 .toList();
     }
-
 
 }

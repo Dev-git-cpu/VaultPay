@@ -12,7 +12,8 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  const SignUpHandler = async () => {
+  const SignUpHandler = async (e) => {
+    e.preventDefault(); // ⭐ IMPORTANT — prevent reload
 
     if (!name || !username || !email || !password) {
       toast.warning("All fields are required");
@@ -25,24 +26,19 @@ const Signup = () => {
         { name, username, email, password }
       );
 
-      console.log(response.data);
-
       toast.success("Account created! Please login 🔐");
+
       navigate("/login");
 
     } catch (error) {
-      console.log(error);
-
       const message =
         error.response?.data?.message || "Signup failed";
-
       toast.error(message);
     }
   };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6">
-
       <div className="relative w-full max-w-md m-10">
 
         <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-3xl"></div>
@@ -63,7 +59,7 @@ const Signup = () => {
             </p>
           </div>
 
-          <div className="space-y-6">
+          <form onSubmit={SignUpHandler} className="space-y-6">
 
             <div>
               <label className="block text-sm text-gray-300 mb-2">
@@ -74,12 +70,12 @@ const Signup = () => {
                 onChange={(e) => setName(e.target.value)}
                 type="text"
                 placeholder="Full name"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white "
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300 mb-2">
+              <label className="block text-sm text-gray-300 mb-2 "> 
                 Username
               </label>
               <input
@@ -87,7 +83,7 @@ const Signup = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 type="text"
                 placeholder="username"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
               />
             </div>
 
@@ -100,7 +96,7 @@ const Signup = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="email"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
               />
             </div>
 
@@ -113,13 +109,13 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
               />
             </div>
 
             <button
-              onClick={SignUpHandler}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition duration-300 shadow-lg shadow-emerald-500/30"
+              type="submit"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl"
             >
               Register
             </button>
@@ -134,7 +130,7 @@ const Signup = () => {
               </span>
             </p>
 
-          </div>
+          </form>
         </div>
       </div>
     </div>

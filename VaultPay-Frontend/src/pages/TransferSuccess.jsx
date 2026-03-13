@@ -5,7 +5,7 @@ const TransferSuccess = () => {
   const { state } = useLocation();
 
   if (!state) {
-    navigate("/dashboard",{replace:true});
+    navigate("/dashboard");
     return null;
   }
 

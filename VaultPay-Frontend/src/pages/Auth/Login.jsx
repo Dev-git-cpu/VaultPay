@@ -10,39 +10,42 @@ const Login = () => {
 
   const navigate = useNavigate();
 
- const LoginHandler = async (e) => {
-  e.preventDefault();
+  const LoginHandler = async (e) => {
+    e.preventDefault();
 
-  if (!identifier || !password) {
-    toast.warning("All fields are required");
-    return;
-  }
-
-  try {
-    const response = await axios.post(
-      "http://localhost:8080/api/auth/login",
-      { identifier, password }
-    );
-
-    const data = response.data;
-
-    if (!data.userId) {
-      toast.error(data.message || "Login failed");
+    if (!identifier || !password) {
+      toast.warning("All fields are required");
       return;
     }
 
-    localStorage.setItem("userId", data.userId);
-    localStorage.setItem("username", data.username);
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        {  identifier, password }
+      );
 
-    toast.success("Login Successful");
+      const data = response.data;
+      console.log(data);
+      console.log(localStorage);
+      
+      
 
-    navigate("/dashboard",{replace:true});
-  } catch (error) {
-    const message =
-      error.response?.data?.message || "Login failed";
-    toast.error(message);
-  }
-};
+      localStorage.setItem("token", data.token);
+
+      // ⭐ SAVE JWT + USER INFO
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.username);
+
+      toast.success("Login Successful");
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Login failed";
+      toast.error(message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6">
@@ -69,14 +72,14 @@ const Login = () => {
 
             <div>
               <label className="block text-sm text-gray-300 mb-2">
-                Username or Email
+                Username
               </label>
               <input
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 type="text"
-                placeholder="john@example.com"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                placeholder="username"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
               />
             </div>
 
@@ -89,19 +92,13 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
               />
-            </div>
-
-            <div className="text-right">
-              <p className="text-emerald-500 text-sm cursor-pointer hover:underline">
-                Forgot password?
-              </p>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition duration-300 shadow-lg shadow-emerald-500/30"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl"
             >
               Log In
             </button>
