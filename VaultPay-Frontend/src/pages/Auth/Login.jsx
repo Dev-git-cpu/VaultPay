@@ -2,16 +2,20 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { TailSpin } from "react-loader-spinner";
 
 const Login = () => {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoader] = useState(false)
 
   const navigate = useNavigate();
 
   const LoginHandler = async (e) => {
     e.preventDefault();
+
+    setLoader(true)
 
     if (!identifier || !password) {
       toast.warning("All fields are required");
@@ -45,6 +49,7 @@ const Login = () => {
         error.response?.data?.message || "Login failed";
       toast.error(message);
     }
+    setLoader(false)
   };
 
   return (
@@ -99,8 +104,18 @@ const Login = () => {
             <button
               type="submit"
               className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl"
+              
             >
-              Log In
+              {loading ? (
+            <TailSpin
+              height="20"
+              width="500"
+              color="#000000"
+              ariaLabel="loading"
+            />
+          ) : (
+            "Login"
+          )}
             </button>
 
             <p className="text-center text-gray-400 text-sm mt-6">
