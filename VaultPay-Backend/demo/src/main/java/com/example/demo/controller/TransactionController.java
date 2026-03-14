@@ -5,6 +5,7 @@ import com.example.demo.dto.transaction.TransferRequest;
 import com.example.demo.dto.transaction.TransferResponse;
 import com.example.demo.entity.Transaction;
 import com.example.demo.service.TransactionService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
