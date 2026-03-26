@@ -48,7 +48,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "https://vaultpaybackend.vercel.app/",
+                "https://vaultpay-frontend.vercel.app/",
                 "http://localhost:4173",
                 "http://localhost:3000"
         ));
