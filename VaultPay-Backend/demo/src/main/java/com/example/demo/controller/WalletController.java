@@ -10,7 +10,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/wallet")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3001")
 public class WalletController {
 
     private final WalletService walletService;

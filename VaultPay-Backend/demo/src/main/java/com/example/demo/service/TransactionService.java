@@ -35,12 +35,14 @@ public class TransactionService {
 
        User sender = userRepository.findByUsername(username)
                .orElseThrow(()-> new UserNotFoundException("sender not found"));
+
        Wallet senderWallet = walletRepository.findByUser(sender)
                .orElseThrow(()-> new WalletNotFoundException("Sender wallet not found"));
 
 
-       User receiver = userRepository.findByUsername(request.getIdentifier())
-               .orElseThrow(()-> new UserNotFoundException("Receiver not found"));
+       User receiver = userRepository
+               .findByUsernameOrEmail(request.getIdentifier().trim(), request.getIdentifier().trim())
+               .orElseThrow(() -> new UserNotFoundException("Receiver not found"));
 
        Wallet receiverWallet = walletRepository.findByUser(receiver)
                .orElseThrow(()-> new WalletNotFoundException("Receiver wallet not found"));
