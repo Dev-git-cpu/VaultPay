@@ -47,10 +47,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "https://vaultpay-frontend.vercel.app/",
-                "http://localhost:4173",
-                "http://localhost:3000"
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://vaultpay-frontend.vercel.app",
+                "https://vaultpay-frontend-*.vercel.app",
+                "http://localhost:3001",
+                "http://localhost:5173"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));

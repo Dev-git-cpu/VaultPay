@@ -4,43 +4,48 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TailSpin } from "react-loader-spinner";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const Signup = () => {
-
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoader] = useState(false)
+  const [loading, setLoader] = useState(false);
 
   const navigate = useNavigate();
 
   const SignUpHandler = async (e) => {
-    e.preventDefault(); // ⭐ IMPORTANT — prevent reload
-
-    setLoader(true)
+    e.preventDefault(); // prevent page reload
+    setLoader(true);
 
     if (!name || !username || !email || !password) {
       toast.warning("All fields are required");
+      setLoader(false);
       return;
     }
 
+    console.log("API URL:", API_URL);
+
+    
     try {
+
       const response = await axios.post(
-        "http://localhost:8080/api/auth/register",
+        `${API_URL}/api/auth/register`,
         { name, username, email, password }
       );
+    console.log("API URL:", process.env.REACT_APP_API_URL);
 
       toast.success("Account created! Please login 🔐");
-
       navigate("/login");
 
     } catch (error) {
-      const message =
-        error.response?.data?.message || "Signup failed";
+      const message = error.response?.data?.message || "Signup failed";
       toast.error(message);
     }
-    setLoader(false)
+
+    setLoader(false);
   };
 
   return (
@@ -76,7 +81,7 @@ const Signup = () => {
                 onChange={(e) => setName(e.target.value)}
                 type="text"
                 placeholder="Full name"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white "
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 
@@ -89,7 +94,7 @@ const Signup = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 type="text"
                 placeholder="username"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 
@@ -102,7 +107,7 @@ const Signup = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="email"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 
@@ -115,7 +120,7 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 

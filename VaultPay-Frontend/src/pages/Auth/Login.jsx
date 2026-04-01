@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TailSpin } from "react-loader-spinner";
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
+
 const Login = () => {
+  
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -22,33 +26,30 @@ const Login = () => {
       return;
     }
 
+console.log("API URL:", API_URL);
+   
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        {  identifier, password }
-      );
+       
+  const response = await axios.post(
+    `${API_URL}/api/auth/login`,
+    { identifier, password }
+  );
+  console.log("API URL:", API_URL);
 
-      const data = response.data;
-      console.log(data);
-      console.log(localStorage);
-      
-      
+  const data = response.data;
+  console.log(data);
 
-      localStorage.setItem("token", data.token);
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("userId", data.userId);
+  localStorage.setItem("username", data.username);
 
-      // ⭐ SAVE JWT + USER INFO
-      localStorage.setItem("userId", data.userId);
-      localStorage.setItem("username", data.username);
+  toast.success("Login Successful");
+  navigate("/dashboard");
 
-      toast.success("Login Successful");
-
-      navigate("/dashboard");
-
-    } catch (error) {
-      const message =
-        error.response?.data?.message || "Login failed";
-      toast.error(message);
-    }
+} catch (error) {
+  const message = error.response?.data?.message || "Login failed";
+  toast.error(message);
+}
     setLoader(false)
   };
 
@@ -84,7 +85,7 @@ const Login = () => {
                 onChange={(e) => setIdentifier(e.target.value)}
                 type="text"
                 placeholder="username"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 
@@ -97,13 +98,13 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="••••••••"
-                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white"
+                className="w-full bg-[#111] border border-emerald-500/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-semibold py-3 rounded-xl transition"
               
             >
               {loading ? (

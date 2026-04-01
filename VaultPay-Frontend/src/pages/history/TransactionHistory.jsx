@@ -1,52 +1,46 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const TransactionHistory = () => {
   const navigate = useNavigate();
-
   const [transactions, setTransactions] = useState([]);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
-
-       if (!token) {
-      navigate("/login");
-      return;
-    }
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
       try {
-        const res = await axios.get(
-          `http://localhost:8080/api/transactions/history`,
-          {
-            headers:{
-              Authorization: `Bearer ${token}`
-            }
-          }
-          
-        );
+        const res = await axios.get(`${API_URL}/api/transactions/history`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("History:", res.data);
 
-        setTransactions(res.data);
+        setTransactions(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching transactions:", err);
+        setTransactions([]);
       }
     };
 
     fetchTransactions();
+    const interval = setInterval(fetchTransactions,3000);
+    return () => clearInterval(interval)
   }, []);
 
   const filteredTransactions = transactions.filter((tx) => {
     const isSent = tx.type?.toLowerCase() === "sent";
-
     if (filter === "sent" && !isSent) return false;
     if (filter === "received" && isSent) return false;
-
     return true;
   });
-
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white">
       <nav className="flex items-center justify-between px-10 py-6 border-b border-emerald-500/20">

@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
+
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -16,9 +19,10 @@ const ProfilePage = () => {
       navigate("/login");
       return;
     }
+
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/users/profile`,
+          `${API_URL}/api/users/profile`,
           {
           headers: {
             Authorization: `Bearer ${token}`,
